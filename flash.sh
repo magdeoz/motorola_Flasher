@@ -149,6 +149,9 @@ fastboot erase modemst2 >> logcat.txt
 fastboot flash fsg fsg.mbn >> logcat.txt
 fastboot erase cache >> logcat.txt
 fastboot erase userdata >> logcat.txt
+echo " "
+echo -e "${txtgrn}############### $succed ###############${txtrst}"
+echo " "
 }
 
 ## Actions
