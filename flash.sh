@@ -133,6 +133,22 @@ GOTOFLASH() {
 clear
 echo -e "${txtgrn}################# $flash #################${txtrst}"
 adb devices
+fastboot devices >> logcat.txt
+fastboot flash partition gpt.bin >> logcat.txt
+fastboot flash motoboot motoboot.img >> logcat.txt
+fastboot flash logo logo.bin >> logcat.txt
+fastboot flash boot boot.img >> logcat.txt
+fastboot flash recovery recovery.img >> logcat.txt
+fastboot flash system system.img_sparsechunk.0 >> logcat.txt
+fastboot flash system system.img_sparsechunk.1 >> logcat.txt
+fastboot flash system system.img_sparsechunk.2 >> logcat.txt
+fastboot flash system system.img_sparsechunk.3 >> logcat.txt
+fastboot flash modem NON-HLOS.bin >> logcat.txt
+fastboot erase modemst1 >> logcat.txt
+fastboot erase modemst2 >> logcat.txt
+fastboot flash fsg fsg.mbn >> logcat.txt
+fastboot erase cache >> logcat.txt
+fastboot erase userdata >> logcat.txt
 }
 
 ## Actions
