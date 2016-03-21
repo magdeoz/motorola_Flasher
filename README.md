@@ -13,3 +13,7 @@ simple script bash for flash stock Rom Moto E (xt1021) RetailLA
 
 This script is just to flash the [Stock ROM LA xt1021][1] 
 [1]: https://androidfilehost.com/?fid=24052804347839202
+
+## Usage
+>sh flash.sh
+>.flash.sh
