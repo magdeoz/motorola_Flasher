@@ -20,6 +20,18 @@ msg='	Se esta verificando que ningun archivo este dañado mediante la comprobaci
 msg2='	Esto es para evitar errores que puedan causar algun brickeo o hardbrick'
 msg3='	Si algun archivo esta dañado se detendra automaticamente el script!.'
 
+info () {
+if [ -f factory_version_info_cfc.txt ]; then
+	echo " "
+	echo "#####""                                                                                                  ""#####"; cat -b factory_version_info_cfc.txt; echo "#####""                                                                                                  ""#####"
+	echo "                      ""presione cualquier tecla para continuar"
+	read -n1 any_key							
+	clear	
+else
+	echo "           ""No se encontro informacion del Firmware!"
+fi
+}
+
 ##
 ## Variables
 ##
@@ -701,6 +713,7 @@ else
 	echo " "
 fi
 
+info
 
 #start
 echo
