@@ -34,97 +34,13 @@ else
 fi
 }
 
-##
-## Variables
-##
-
-
-boot() {
-if [ -f boot.img ]; then
-	echo -e "${txtgrn}OK${txtrst}"
-else
-	echo -e "FAIL!"
-fi
-}
-
-recovery() {
-if [ -f recovery.img ]; then
-	echo -e "${txtgrn}OK${txtrst}"
-else
-	echo "FAIL!" 
-fi
-}
-
-motoboot() {
-if [ -f motoboot.img ]; then
-	echo -e "${txtgrn}OK${txtrst}"
-else
-	echo "FAIL!" 
-fi
-}
-
-system0() {
-if [ -f system.img_sparsechunk.0 ]; then
-	echo -e "${txtgrn}OK${txtrst}"
-else
-	echo "FAIL!"
-fi
-}
-
-system1() {
-if [ -f system.img_sparsechunk.1 ]; then
-	echo -e "${txtgrn}OK${txtrst}"
-else
-	echo "FAIL!"
-fi
-}
-
-system2() {
-if [ -f system.img_sparsechunk.2 ]; then
-	echo -e "${txtgrn}OK${txtrst}"
-else
-	echo "FAIL!"
-fi
-}
-
-system3() {
-if [ -f system.img_sparsechunk.3 ]; then
-	echo -e "${txtgrn}OK${txtrst}"
-else
-	echo "FAIL!"
-fi
-}
-
-logo() {
-if [ -f logo.bin ]; then
-	echo -e "${txtgrn}OK${txtrst}"
-else
-	echo "FAIL!"
-fi
-}
-
-gpt() {
-if [ -f gpt.bin ]; then
-	echo -e "${txtgrn}OK${txtrst}"
-else
-	echo "FAIL!"
-fi
-}
-
-fsg() {
-if [ -f fsg.mbn ]; then
-	echo -e "${txtgrn}OK${txtrst}"
-else
-	echo "FAIL!"
-fi
-}
 
 ## Fails
 GOTOFAILM() {
 	echo " "
 	echo -e "       ""${red}ERROR: Sumas No coinciden " "--" "ABORTING!${txtrst}"
 	echo " "
-	echo -e "${bldred}################## $error ${bldred}##################${txtrst}"
+	echo -e "	""${bldred}################## $error ${bldred}##################${txtrst}"
 exit
 }
 
@@ -143,29 +59,56 @@ GOTOADBN() {
 exit
 }
 
+GOTOFAILV() {
+	echo " "
+	echo -e "           ""${red}ERROR: No se encontro el archivo" "--" "ABORTING!${txtrst}"
+	echo " "
+	echo -e "	""${bldred}################## $error ${bldred}##################${txtrst}"
+exit
+}
+
 GOTOFLASH() {
 clear
 echo -e "${txtgrn}################# $flash #################${txtrst}"
-adb devices
-fastboot devices >> logcat.txt
-fastboot flash partition gpt.bin >> logcat.txt
-fastboot flash motoboot motoboot.img >> logcat.txt
-fastboot flash logo logo.bin >> logcat.txt
-fastboot flash boot boot.img >> logcat.txt
-fastboot flash recovery recovery.img >> logcat.txt
-fastboot flash system system.img_sparsechunk.0 >> logcat.txt
-fastboot flash system system.img_sparsechunk.1 >> logcat.txt
-fastboot flash system system.img_sparsechunk.2 >> logcat.txt
-fastboot flash system system.img_sparsechunk.3 >> logcat.txt
-fastboot flash modem NON-HLOS.bin >> logcat.txt
-fastboot erase modemst1 >> logcat.txt
-fastboot erase modemst2 >> logcat.txt
-fastboot flash fsg fsg.mbn >> logcat.txt
-fastboot erase cache >> logcat.txt
-fastboot erase userdata >> logcat.txt
-echo " "
-echo -e "${txtgrn}############### $succed ###############${txtrst}"
-echo " "
+	echo 'Detectando dispositivo...'
+		adb devices
+	echo "Reiniciando en modo bootloader"
+		adb reboot bootloader
+	echo "Detectando dsipositivo"
+		fastboot devices
+	echo "Inciciano proceso"
+	echo "Presione cualquier tecla para continuar"
+		read -n1 any_key 
+	echo "flasheando tabla de pariciones"
+		fastboot flash partition gpt.bin
+	echo "Flasheando bootloader "
+		fastboot flash motoboot motoboot.img
+	echo "Flasheando logo..."
+		fastboot flash logo logo.bin
+	echo "Flasheando kernel..."
+		fastboot flash boot boot.img
+	echo "flasheando recovery"
+		fastboot flash recovery recovery.img
+	echo "Flasheando sistema (1/4)"
+		fastboot flash system system.img_sparsechunk.0
+	echo "Flasheando sistema (2/4)"
+		fastboot flash system system.img_sparsechunk.1
+	echo "Flasheando sistema (3/4)"
+		fastboot flash system system.img_sparsechunk.2
+	echo "Flasheando sistema (4/4)"
+		fastboot flash system system.img_sparsechunk.3
+	echo "Flasheando Modem"
+		fastboot flash modem NON-HLOS.bin
+		fastboot erase modemst1
+		fastboot erase modemst2
+		fastboot flash fsg fsg.mbn
+	echo "Limpiando cache"
+		fastboot erase cache
+	echo "Borrando Datos"
+		fastboot erase userdata
+	echo " "
+	echo -e "${txtgrn}############### $succed ###############${txtrst}"
+	echo " "
 GOTOMENU
 }
 
@@ -264,7 +207,7 @@ if [[ $(motobootmd5) == *"La suma coincide" ]]; then
 	echo "$msg2"
 	echo "$msg3"
 	echo ""
-	echo -ne '	''['${txtgrn}'######''                '''${txtrst}'][30%]['${bldcyn}''$obj''${txtrst}': '${bld}'La suma coincide]'${txtrst}']\r'
+	echo -ne '	''['${txtgrn}'######''                '''${txtrst}'][30%]['${bldcyn}''$obj''${txtrst}': '${bld}'La suma coincide'${txtrst}']\r'
 	echo ""
 else
 	clear
@@ -380,7 +323,7 @@ else
 	echo "$msg2"
 	echo "$msg3"
 	echo ""
-	echo -ne '	''['${txtgrn}'############''          '''${txtrst}'][10%]['${bldcyn}''$obj''${txtrst}': '${bldred}'La suma NO coincide'${txtrst}']\r'
+	echo -ne '	''['${txtgrn}'############''          '''${txtrst}'][60%]['${bldcyn}''$obj''${txtrst}': '${bldred}'La suma NO coincide'${txtrst}']\r'
 	echo ""
 	GOTOFAILM
 	exit
@@ -416,7 +359,7 @@ else
 	echo "$msg2"
 	echo "$msg3"
 	echo ""
-	echo -ne '	''['${txtgrn}'##############''        '''${txtrst}'][10%]['${bldcyn}''$obj''${txtrst}': '${bldred}'La suma NO coincide'${txtrst}']\r'
+	echo -ne '	''['${txtgrn}'##############''        '''${txtrst}'][70%]['${bldcyn}''$obj''${txtrst}': '${bldred}'La suma NO coincide'${txtrst}']\r'
 	echo ""
 	GOTOFAILM
 	exit
@@ -452,7 +395,7 @@ else
 	echo "$msg2"
 	echo "$msg3"
 	echo ""
-	echo -ne '	''['${txtgrn}'################''      '''${txtrst}'][10%]['${bldcyn}''$obj''${txtrst}': '${bldred}'La suma NO coincide'${txtrst}']\r'
+	echo -ne '	''['${txtgrn}'################''      '''${txtrst}'][80%]['${bldcyn}''$obj''${txtrst}': '${bldred}'La suma NO coincide'${txtrst}']\r'
 	echo ""
 	GOTOFAILM
 	exit
@@ -488,7 +431,7 @@ else
 	echo "$msg2"
 	echo "$msg3"
 	echo ""
-	echo -ne '	''['${txtgrn}'##################''    '''${txtrst}'][10%]['${bldcyn}''$obj''${txtrst}': '${bldred}'La suma NO coincide'${txtrst}']\r'
+	echo -ne '	''['${txtgrn}'##################''    '''${txtrst}'][90%]['${bldcyn}''$obj''${txtrst}': '${bldred}'La suma NO coincide'${txtrst}']\r'
 	echo ""
 	GOTOFAILM
 	exit
@@ -560,7 +503,7 @@ else
 	echo "$msg2"
 	echo "$msg3"
 	echo ""
-	echo -ne '	''['${txtgrn}'######################'${txtrst}'][10%]['${bldcyn}''$obj''${txtrst}': '${bldred}'La suma NO coincide'${txtrst}']\r'
+	echo -ne '	''['${txtgrn}'######################'${txtrst}'][100%]['${bldcyn}''$obj''${txtrst}': '${bldred}'La suma NO coincide'${txtrst}']\r'
 	echo ""
 	GOTOFAILM
 	exit
@@ -579,129 +522,334 @@ GOTOMENU
 ##
 
 GOTOVERIFIED() {
-clear
-echo " "
-echo -e "${txtgrn}################# $verified #################${txtrst}"
+boot() {
+if [ -f boot.img ]; then
+	echo -e "${txtgrn}OK${txtrst}"
+else
+	echo -e "FAIL!"
+fi
+}
 
+obj='boot.img'
 #Boot
 if [ "$(boot)" == "FAIL!" ]; then
-		echo " "
-		echo -e "     ""Comprobando boot              [ ${bldred}$(boot)${txtrst} ]"
-		GOTOFAIL
-else
+	clear
 	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'##''                    '''${txtrst}'][10%]['${bldcyn}''$obj''${txtrst}': '${bldred}'Falta el archivo1!'${txtrst}']\r'
+	echo ""
+	GOTOFAILV
+	exit
+else
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'##''                    '''${txtrst}'][10%]['${bldcyn}''$obj''${txtrst}': '${bld}'El Archivo existe'${txtrst}']\r'
+	echo " "
+	echo " "
+	sleep 1s
 fi
-echo "     ""Comprobando boot.img          [ $(boot) ]"
-sleep 1s
 
+
+recovery() {
+if [ -f recovery.img ]; then
+	echo -e "${txtgrn}OK${txtrst}"
+else
+	echo -e "FAIL!"
+fi
+}
+obj='recovery.img'
 #recovery
-echo " "
 if [ "$(recovery)" == "FAIL!" ]; then
-		echo " "
-		echo -e "     ""Comprobando recovery.img      [ ${bldred}$(recovery)${txtrst} ]" 
-		GOTOFAIL
-else
+	clear
 	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'####''                  '''${txtrst}'][20%]['${bldcyn}''$obj''${txtrst}': '${bld}'Falta el archivo'${txtrst}']\r'
+	echo ""
+	GOTOFAILV
+	exit
+else
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'####''                  '''${txtrst}'][20%]['${bldcyn}''$obj''${txtrst}': '${bld}'El Archivo existe'${txtrst}']\r'
+	echo " "
+	echo " "
+	sleep 1s
 fi
-echo "     ""Comprobando recovery.img      [ $(recovery) ]"
-sleep 1s
 
+
+motoboot() {
+if [ -f motoboot.img ]; then
+	echo -e "${txtgrn}OK${txtrst}"
+else
+	echo "FAIL!" 
+fi
+}
+obj='motoboot.img'
 #motoboot
-echo " "
 if [ "$(motoboot)" == "FAIL!" ]; then
-		echo " "
-		echo -e "     ""Comprobando motoboot          [ ${bldred}$(motoboot)${txtrst} ]"
-		GOTOFAIL
-else
+	clear
 	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'######''                '''${txtrst}'][30%]['${bldcyn}''$obj''${txtrst}': '${bld}'Falta el Archivo'${txtrst}']\r'
+	echo ""
+	GOTOFAILV
+	exit
+else
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'######''                '''${txtrst}'][30%]['${bldcyn}''$obj''${txtrst}': '${bld}'El Archivo existe'${txtrst}']\r'
+	echo " "
+	echo " "
+	sleep 1s
 fi
-echo "     ""Comprobando motoboot          [ $(motoboot) ]"
-sleep 1s
 
+
+system0() {
+if [ -f system.img_sparsechunk.0 ]; then
+	echo -e "${txtgrn}OK${txtrst}"
+else
+	echo "FAIL!"
+fi
+}
+obj='system.img_sparsechunk.0'
 #system0
-echo " "
 if [ "$(system0)" == "FAIL!" ]; then
-		echo " "
-		echo -e "     ""Comprobando system.0          [ ${bldred}$(system0)${txtrst} ]" 
-		GOTOFAIL
-else
+	clear
 	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'########''              '''${txtrst}'][40%]['${bldcyn}''$obj''${txtrst}': '${bld}'Falta el Archivo'${txtrst}']\r'
+	echo ""
+	GOTOFAILV
+	exit
+else
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'########''              '''${txtrst}'][40%]['${bldcyn}''$obj''${txtrst}': '${bld}'El Archivo existe'${txtrst}']\r'
+	echo " "
+	echo " "
+	sleep 1s
 fi
-echo "     ""Comprobando system.0          [ $(system0) ]"
-sleep 1s
 
+
+system1() {
+if [ -f system.img_sparsechunk.1 ]; then
+	echo -e "${txtgrn}OK${txtrst}"
+else
+	echo "FAIL!"
+fi
+}
+obj='system.img_sparsechunk.1'
 #system1
-echo " "
 if [ "$(system1)" == "FAIL!" ]; then
-		echo " "
-		echo -e "     ""Comprobando system.1          [ ${bldred}$(system1)${txtrst} ]" 
-		GOTOFAIL
-else
+	clear
 	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'##########''            '''${txtrst}'][50%]['${bldcyn}''$obj''${txtrst}': '${bld}'Falta el archivo'${txtrst}']\r'
+	echo ""
+	GOTOFAILV
+	exit
+else
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'##########''            '''${txtrst}'][50%]['${bldcyn}''$obj''${txtrst}': '${bld}'El Archivo existe'${txtrst}']\r'
+	echo " "
+	echo " "
+	sleep 1s
 fi
-echo "     ""Comprobando system.1          [ $(system1) ]"
-sleep 1s
 
+
+system2() {
+if [ -f system.img_sparsechunk.2 ]; then
+	echo -e "${txtgrn}OK${txtrst}"
+else
+	echo "FAIL!"
+fi
+}
+obj='system.img_sparsechunk.2'
 #system2
-echo " "
 if [ "$(system2)" == "FAIL!" ]; then
-		echo " "
-		echo -e "     ""Comprobando system.2          [ ${bldred}$(system2)${txtrst} ]" 
-		GOTOFAIL
-else
+	clear
 	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'############''          '''${txtrst}'][60%]['${bldcyn}''$obj''${txtrst}': '${bld}'Falta el archivo'${txtrst}']\r'
+	echo ""
+	GOTOFAILV
+	exit
+else
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'############''          '''${txtrst}'][60%]['${bldcyn}''$obj''${txtrst}': '${bld}'El Archivo existe'${txtrst}']\r'
+	echo " "
+	echo " "
+	sleep 1s
 fi
-echo "     ""Comprobando system.2          [ $(system2) ]"
-sleep 1s
 
+system3() {
+if [ -f system.img_sparsechunk.3 ]; then
+	echo -e "${txtgrn}OK${txtrst}"
+else
+	echo "FAIL!"
+fi
+}
+obj='system.img_sparsechunk.3'
 #system3
-echo " "
 if [ "$(system3)" == "FAIL!" ]; then
-		echo " "
-		echo -e "     ""Comprobando system.3          [ ${bldred}$(system3)${txtrst} ]" 
-		GOTOFAIL
-else
+	clear
 	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'##############''        '''${txtrst}'][70%]['${bldcyn}''$obj''${txtrst}': '${bld}'Falta el archivo'${txtrst}']\r'
+	echo ""
+	GOTOFAILV
+	exit
+else
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'##############''        '''${txtrst}'][70%]['${bldcyn}''$obj''${txtrst}': '${bld}'El Archivo existe'${txtrst}']\r'
+	echo " "
+	echo " "
+	sleep 1s
 fi
-echo "     ""Comprobando system.3          [ $(system3) ]"
-sleep 1s
 
+logo() {
+if [ -f logo.bin ]; then
+	echo -e "${txtgrn}OK${txtrst}"
+else
+	echo "FAIL!"
+fi
+}
+obj='logo'
 #logo
-echo " "
 if [ "$(logo)" == "FAIL!" ]; then
-		echo " "
-		echo -e "     ""Comprobando logo              [ ${bldred}$(logo)${txtrst} ]" 
-		GOTOFAIL
-else
+	clear
 	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'################''      '''${txtrst}'][80%]['${bldcyn}''$obj''${txtrst}': '${bld}'Falta el archivo'${txtrst}']\r'
+	echo ""
+	GOTOFAILV
+	exit
+else
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'################''      '''${txtrst}'][80%]['${bldcyn}''$obj''${txtrst}': '${bld}'El Archivo existe'${txtrst}']\r'
+	echo " "
+	echo " "
+	sleep 1s
 fi
-echo "     ""Comprobando logo              [ $(logo) ]"
-sleep 1s
 
-#gpt
-echo " "
+
+gpt() {
+if [ -f gpt.bin ]; then
+	echo -e "${txtgrn}OK${txtrst}"
+else
+	echo "FAIL!"
+fi
+}
+obj='gpt.bin'
+#logo
 if [ "$(gpt)" == "FAIL!" ]; then
-		echo " "
-		echo -e "     ""Comprobando gpt               [ ${bldred}$(gpt)${txtrst} ]" 
-		GOTOFAIL
-else
+	clear
 	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'##################''    '''${txtrst}'][90%]['${bldcyn}''$obj''${txtrst}': '${bld}'Falta el archivo'${txtrst}']\r'
+	echo ""
+	GOTOFAILV
+	exit
+else
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'##################''    '''${txtrst}'][90%]['${bldcyn}''$obj''${txtrst}': '${bld}'El Archivo existe'${txtrst}']\r'
+	echo " "
+	echo " "
+	sleep 1s
 fi
-echo "     ""Comprobando gpt               [ $(gpt) ]"
-sleep 1s
 
-#fsg
-echo " "
-if [ "$(fsg)" == "FAIL!" ]; then
-		echo " "
-		echo -e "     ""Comprobando fsg               [ ${bldred}$(fsg)${txtrst} ]" 
-		GOTOFAIL
+fsg() {
+if [ -f fsg.mbn ]; then
+	echo -e "${txtgrn}OK${txtrst}"
 else
-	echo " "
-	echo "     ""Comprobando fsg               [ $(fsg) ]"
+	echo "FAIL!"
 fi
+}
+obj='fsg.mbn'
+#logo
+if [ "$(fsg)" == "FAIL!" ]; then
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'####################''  '''${txtrst}'][95%]['${bldcyn}''$obj''${txtrst}': '${bld}'Falta el archivo'${txtrst}']\r'
+	echo ""
+	GOTOFAILV
+	exit
+else
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'####################''  '''${txtrst}'][95%]['${bldcyn}''$obj''${txtrst}': '${bld}'El Archivo existe'${txtrst}']\r'
+	echo " "
+	echo " "
+	sleep 1s
+fi
+
+NON() {
+if [ -f NON-HLOS.bin ]; then
+	echo -e "${txtgrn}OK${txtrst}"
+else
+	echo "FAIL!"
+fi
+}
+obj='NON-HLOS.bin'
+#non-hlos
+if [ "$(NON)" == "FAIL!" ]; then
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'######################'${txtrst}'][100%]['${bldcyn}''$obj''${txtrst}': '${bld}'Falta el archivo'${txtrst}']\r'
+	echo ""
+	GOTOFAILV
+	exit
+else
+	clear
+	echo " "
+	echo -e '	'"${txtgrn}################# $verified #################${txtrst}"
+	echo " "
+	echo -ne '	''['${txtgrn}'######################'${txtrst}'][100%]['${bldcyn}''$obj''${txtrst}': '${bld}'El Archivo existe'${txtrst}']\r'
+	echo " "
+	echo " "
+	sleep 1s
+fi
+
 echo " "
-echo -e "${txtgrn}############### $succed ###############${txtrst}"
+echo -e '	'"${txtgrn}############### $succed ###############${txtrst}"
 echo " "
 sleep 3s
 clear
@@ -769,7 +917,6 @@ GOTOMENU () {
 	q) clear; echo "Goodbye"; read; clear; exit;;
 	esac
 }
-
 GOTOMENU
 
 
