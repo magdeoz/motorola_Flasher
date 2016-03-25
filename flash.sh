@@ -9,7 +9,7 @@ bld='\e[1;1m'     # Bold
 sub='\e[1;7m'
 mk='\e[0;9m'      # Subrayado
 window='\e[4;36m' # Window
-
+version='1.6'
 CHECKFB="$(command -v fastboot)"
 verified='Verificando Archivos'
 flash='Flashing'
@@ -23,7 +23,9 @@ msg3='	Si algun archivo esta dañado se detendra automaticamente el script!.'
 info () {
 if [ -f factory_version_info_cfc.txt ]; then
 	echo " "
-	echo "#####""                                                                                                  ""#####"; cat -b factory_version_info_cfc.txt; echo "#####""                                                                                                  ""#####"
+	echo -e "    ""${window}*********************************************************************************${txtrst}"
+	cat -b factory_version_info_cfc.txt
+	echo -e "    ""${window}*********************************************************************************${txtrst}"
 	echo "                      ""presione cualquier tecla para continuar"
 	read -n1 any_key							
 	clear	
@@ -164,6 +166,7 @@ fastboot erase userdata >> logcat.txt
 echo " "
 echo -e "${txtgrn}############### $succed ###############${txtrst}"
 echo " "
+GOTOMENU
 }
 
 ## Actions
@@ -566,7 +569,9 @@ fi
 echo " "
 echo -e '	'"${txtgrn}############### $succed ###############${txtrst}"
 echo " "
-
+sleep 3s
+clear
+GOTOMENU
 }
 
 ##
@@ -574,6 +579,7 @@ echo " "
 ##
 
 GOTOVERIFIED() {
+clear
 echo " "
 echo -e "${txtgrn}################# $verified #################${txtrst}"
 
@@ -697,6 +703,9 @@ fi
 echo " "
 echo -e "${txtgrn}############### $succed ###############${txtrst}"
 echo " "
+sleep 3s
+clear
+GOTOMENU
 }
 
 ##
@@ -715,85 +724,53 @@ fi
 
 info
 
-#start
-echo
-echo -e "    ""${window}*********************************************************************${txtrst}"
-echo -e "    ""${window}**${txtrst}""                     ""MOTOROLA FLASHER""                            ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""           ""PROCESO""             ""current: paso 1""                   ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""          ""1.- Verificacion de archivos""                           ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""   	""2.- Comprobar sumas de verificacion""                    ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""   	""3.- Flasheo""                                            ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""           ""presione cualquier tecla para inciar el paso 1""        ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}*********************************************************************${txtrst}"
-echo
-read -n1 any_key
-clear
-GOTOVERIFIED
-echo "paso 1 completado; presione cualquier tecla para continuar"
-read -n1 any_key
+GOTOMENU () {
+	clear
+	echo -e "    ""${window}|*******************************************|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""      ""${bld}MOTO FLASHER - Version $(echo "$version")${txtrst}""       ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""  ""Please select your option:""           ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""  ""1. Flash Rom""                         ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""  ""2. Check MD5sum""                      ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""  ""3. Verified Files""                    ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""  ""Q/q - Exit Script""                    ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
+	echo -e "    ""${window}|*******************************************|${txtrst}"
+	echo " "
+	echo -e "    ""${bldcyn}Option: ${txtrst}"
+	read OPT
+	if [[ ! $OPT == "1" ]]; then
+		if [[ ! $OPT == "2" ]]; then
+			if [[ ! $OPT == "3" ]]; then
+				if [[ ! $OPT == q ]]; then
+					if [[ ! $OPT == Q ]]; then
+					
+					clear
+					echo -e "    ""${window}|*******************************************|${txtrst}"
+					echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
+					echo -e "    ""${window}|*|${txtrst}""      ""${bld}MOTO FLASHER - Version $(echo "$version")${txtrst}""       ""${window}|*|${txtrst}"
+					echo -e "    ""${window}|*|${txtrst}""                                       ""${window}|*|${txtrst}"
+					echo -e "    ""${window}|*******************************************|${txtrst}"
+					echo " "
+					echo -e "    ""${bldred}Invalid Input: Please try again!${txtrst}"
+					sleep 2s
+					GOTOMENU
+					fi
+				fi
+			fi
+		fi
+	fi
+	case $OPT in
+	1) GOTOFLASH ;;
+	2) GOTOMD5 ;;
+	3) GOTOVERIFIED ;;
+	Q) clear; echo "Goodbye"; read; clear; exit;;
+	q) clear; echo "Goodbye"; read; clear; exit;;
+	esac
+}
 
-#verifiedmd5
-clear
-echo
-echo -e "    ""${window}*********************************************************************${txtrst}"
-echo -e "    ""${window}**${txtrst}""                     ""MOTOROLA FLASHER""                            ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""           ""PROCESO""             ""current: paso 2""                   ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""          ""1.- ${mk}Verificacion de archivos${txtrst}""                           ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""   	""2.- Comprobar sumas de verificacion""                    ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""   	""3.- Flasheo""                                            ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""           ""presione cualquier tecla para inciar el paso 2""        ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}*********************************************************************${txtrst}"
-echo
-read -n1 any_key
-clear
-GOTOMD5
-echo "paso 2 completado; presione cualquier tecla para continuar"
-read -n1 any_key
-
-##flash
-clear
-echo
-echo -e "    ""${window}*********************************************************************${txtrst}"
-echo -e "    ""${window}**${txtrst}""                     ""MOTOROLA FLASHER""                            ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""           ""PROCESO""             ""current: paso 2""                   ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""          ""1.- ${mk}Verificacion de archivos${txtrst}""                           ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""   	""2.- ${mk}Comprobar sumas de verificacion${txtrst}""                    ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""   	""3.- Flasheo""                                            ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""           ""presione cualquier tecla para inciar el paso 3""        ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}*********************************************************************${txtrst}"
-echo
-read -n1 any_key
-clear
-GOTOFLASH
-echo "paso 3 completado; presione cualquier tecla para continuar"
-read -n1 any_key
-
-#success
-clear
-echo
-echo -e "    ""${window}*********************************************************************${txtrst}"
-echo -e "    ""${window}**${txtrst}""                     ""MOTOROLA FLASHER""                            ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""           ""PROCESO""             ""current: paso 2""                   ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""          ""1.- ${mk}Verificacion de archivos${txtrst}""                           ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""   	""2.- ${mk}Comprobar sumas de verificacion${txtrst}""                    ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""   	""3.- ${mk}Flasheo${txtrst}""                                            ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""           ""presione cualquier tecla para salir""                   ""${window}**${txtrst}"
-echo -e "    ""${window}**${txtrst}""                                                                 ""${window}**${txtrst}"
-echo -e "    ""${window}*********************************************************************${txtrst}"
-echo
-read -n1 any_key 
-
+GOTOMENU
 
 
 
